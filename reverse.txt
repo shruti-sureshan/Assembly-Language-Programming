@@ -1,0 +1,56 @@
+;reverse a string
+;you may change the code as per your understanding
+;my comments should not be printed
+;your name will be the string you enter
+;i will not take your submission if i donot see your name in output snapshot
+
+data segment
+        msg1 db "Enter string: $"
+        msg2 db "Reverse: $"
+        str1 db 25 dup('$')
+        str2 db 25 dup('$')
+data ends
+
+code segment
+assume cs:code, ds:data
+start:  mov ax, data
+        mov ds, ax      ;initialize data segment
+        mov es, ax      ;initialize extra segment
+
+        mov dx, offset msg1
+        mov ah, 09
+        int 21h
+
+        lea di, str1
+        xor cx, cx
+        cld
+        mov ah, 01
+back1:  int 21h
+        cmp al, 0dh
+        jz endip
+        stosb
+        inc cx
+        jmp back1
+
+endip:  dec cx          ;so that end of string char is not counted
+        lea si, str1
+        add si, cx      ;go to the end of entered string
+        lea di, str2
+        inc cx
+back2:  std             ;set DF=1, to decrement DI
+        lodsb           ;mov AL,[SI] and dec SI
+        cld             ;clear DF=0, to increment DI
+        stosb           ;mov [DI],AL and inc DI
+        loop back2      ;continue until cx = 0
+
+        mov dx, offset msg2
+        mov ah, 09
+        int 21h         ;display msg2 on DOS screen
+
+        mov dx, offset str2
+        int 21h         ;display str2 (reversed string) on DOS screen
+
+        mov ah, 4ch
+        int 21h         ;terminate code
+code ends
+end start
